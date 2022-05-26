@@ -1,4 +1,4 @@
-package com.projetologistica.logisticaapi.api.exceptionhandler;
+package com.projetologistica.logisticaapi.exceptionhandler;
 
 public class Campo {
     private String nome;

@@ -1,4 +1,4 @@
-package com.projetologistica.logisticaapi.api.exceptionhandler;
+package com.projetologistica.logisticaapi.exceptionhandler;
 
 import com.projetologistica.logisticaapi.domain.exception.NegocioException;
 import org.springframework.beans.factory.annotation.Autowired;
