@@ -1,4 +1,4 @@
-package com.projetologistica.logisticaapi.api.model;
+package com.projetologistica.logisticaapi.model;
 
 public class DestinatarioModel {
 

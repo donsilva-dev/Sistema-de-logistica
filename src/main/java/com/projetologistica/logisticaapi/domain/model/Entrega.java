@@ -1,6 +1,7 @@
 package com.projetologistica.logisticaapi.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.projetologistica.logisticaapi.domain.exception.NegocioException;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -9,6 +10,8 @@ import javax.validation.groups.ConvertGroup;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -39,8 +42,46 @@ public class Entrega {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private OffsetDateTime dataPedido;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private OffsetDateTime dataFinalizacao;
+
+    public List<Ocorrencia> getOcorrencias() {
+        return ocorrencias;
+    }
+
+    public void setOcorrencias(List<Ocorrencia> ocorrencias) {
+        this.ocorrencias = ocorrencias;
+    }
+
+    @OneToMany(mappedBy = "entrega", cascade = CascadeType.ALL)
+    private List<Ocorrencia> ocorrencias = new ArrayList<>();
+
+    public Ocorrencia adicionarOcorrencia(String descricao) {
+        Ocorrencia ocorrencia = new Ocorrencia();
+        ocorrencia.setDescricao(descricao);
+        ocorrencia.setDataRegistro(OffsetDateTime.now());
+        ocorrencia.setEntrega(this);
+
+        this.getOcorrencias().add(ocorrencia);
+
+        return ocorrencia;
+    }
+
+    public void finalizar() {
+        if (naoPodeSerFinalizada()) {
+            throw new NegocioException("Entrega não pode ser finalizada");
+        }
+
+        setStatus(StatusEntregas.FINALIZADA);
+        setDataFinalizacao(OffsetDateTime.now());
+    }
+
+    public boolean podeSerFinalizada() {
+        return StatusEntregas.PENDENTE.equals(getStatus());
+    }
+
+    public boolean naoPodeSerFinalizada() {
+        return !podeSerFinalizada();
+    }
 
     public Long getId() {
         return id;
@@ -74,8 +115,8 @@ public class Entrega {
         this.taxa = taxa;
     }
 
-    public StatusEntregas getStatus() {
-        return status;
+    public StatusEntregas getStatus(){
+            return status;
     }
 
     public void setStatus(StatusEntregas status) {
@@ -98,6 +139,7 @@ public class Entrega {
         this.dataFinalizacao = dataFinalizacao;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,4 +152,6 @@ public class Entrega {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
 }

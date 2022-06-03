@@ -16,6 +16,7 @@ public class SolicitacaoEntregaService {
 
     @Autowired
     private CatalogoClienteService catalogoClienteService;
+    @Autowired
     private EntregaRepository entregaRepository;
 
     public SolicitacaoEntregaService(CatalogoClienteService catalogoClienteService, EntregaRepository entregaRepository) {

@@ -1,5 +1,6 @@
 package com.projetologistica.logisticaapi.exceptionhandler;
 
+import com.projetologistica.logisticaapi.domain.exception.EntidadeNaoEncontradaException;
 import com.projetologistica.logisticaapi.domain.exception.NegocioException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
+
+    public ApiExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -45,6 +49,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         problema.setCampos(campos);
 
         return handleExceptionInternal(ex, problema, headers, status, request);
+    }
+
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ResponseEntity<Object> handleNegocio(EntidadeNaoEncontradaException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        Problema problema = new Problema();
+        problema.setStatus(status.value());
+        problema.setDataHora(OffsetDateTime.now());
+        problema.setTitulo(ex.getMessage());
+
+        return handleExceptionInternal(ex, problema, new HttpHeaders(), status, request);
     }
 
     @ExceptionHandler(NegocioException.class)
